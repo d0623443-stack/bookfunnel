@@ -158,4 +158,19 @@ class InquiryModel extends Model
         }
         return [];
     }
+
+    /**
+     * Find inquiry by Ticket ID
+     */
+    public function findByTicket(string $ticketId): ?array
+    {
+        $all = $this->getAllInquiries();
+        foreach ($all as $item) {
+            if (strcasecmp($item['ticket_id'] ?? '', $ticketId) === 0 || strcasecmp($item['reference_id'] ?? '', $ticketId) === 0) {
+                return $item;
+            }
+        }
+        return null;
+    }
 }
+

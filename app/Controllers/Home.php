@@ -36,8 +36,31 @@ class Home extends BaseController
         $postData = $this->request->getPost();
         $savedRecord = $inquiryModel->saveInquiry($postData);
 
-        return redirect()->to(base_url('#contact-form'))
-            ->with('success', 'Your IT consultation request has been received! Our Solutions Architect will reach out within 2 hours.')
-            ->with('ticket', $savedRecord);
+        return redirect()->to(base_url('thankyou?ticket=' . urlencode($savedRecord['ticket_id'])))
+            ->with('ticket', $savedRecord)
+            ->with('success', 'Your IT consultation request has been submitted successfully!');
+    }
+
+    public function thankyou(): string
+    {
+        $ticketId = $this->request->getGet('ticket');
+        $inquiryModel = new InquiryModel();
+
+        $ticket = null;
+        if ($ticketId) {
+            $ticket = $inquiryModel->findByTicket($ticketId);
+        }
+
+        if (!$ticket && session()->get('ticket')) {
+            $ticket = session()->get('ticket');
+        }
+
+        $data = [
+            'title' => 'Thank You - Nexora IT Consultation Confirmed',
+            'ticket' => $ticket,
+            'ticket_id' => $ticketId,
+        ];
+
+        return view('pages/thankyou', $data);
     }
 }
