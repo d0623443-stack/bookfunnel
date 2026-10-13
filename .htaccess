@@ -2,18 +2,31 @@
 Options -Indexes
 
 <IfModule mod_rewrite.c>
+    Options +FollowSymlinks
     RewriteEngine On
 
-    # 1. External Redirect: If /public is in browser URL bar, strip it out cleanly
-    RewriteCond %{THE_REQUEST} \s/?[^/]+/public/([^\s?]*) [NC]
-    RewriteRule ^public/(.*)$ %1 [R=301,L]
+    # Prevent direct HTTP access to protected directories
+    RewriteRule ^(app|vendor|writable|\.env|\.git) - [F,L]
 
-    RewriteCond %{THE_REQUEST} \s/?[^/]+/public[\s?] [NC]
-    RewriteRule ^public/?$ ./ [R=301,L]
+    # Redirect Trailing Slashes...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
 
-    # 2. Internal Rewrite: Route root to public/
-    RewriteRule ^$ public/ [L]
+    # Checks to see if the user is attempting to access a valid file,
+    # such as an image or css document, if this isn't true it sends the
+    # request to the front controller, index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^([\s\S]*)$ index.php/$1 [L,NC,QSA]
 
-    # 3. Internal Rewrite: Route all other requests to public/
-    RewriteRule ^((?!public/).*)$ public/$1 [L]
+    # Ensure Authorization header is passed along
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 </IfModule>
+
+<IfModule !mod_rewrite.c>
+    ErrorDocument 404 index.php
+</IfModule>
+
+ServerSignature Off
