@@ -1,81 +1,91 @@
-<?= $this->extend('layouts/main') ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><?= esc($title ?? 'IT Inquiries Dashboard - Nexora') ?></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #070B14; }
+    h1, h2, h3 { font-family: 'Outfit', sans-serif; }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen p-6 sm:p-10">
 
-<?= $this->section('content') ?>
-
-<section class="page-banner" style="padding: 50px 0;">
-  <div class="container page-banner-content">
-    <span class="section-tag" style="background: rgba(255,255,255,0.15); color: #ffffff;">
-      <i class="ph-bold ph-database"></i> Internal Submissions Log
-    </span>
-    <h1 style="font-size: 2.5rem;">Received Inquiries & Bookings</h1>
-    <p>Review and manage all tourism requests submitted through the WanderLuxe website form.</p>
-  </div>
-</section>
-
-<section style="padding: 60px 0 100px;">
-  <div class="container">
+  <div class="max-w-6xl mx-auto space-y-8">
     
-    <div style="background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--border-light); box-shadow: var(--shadow-md); padding: 30px;">
-      
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
-        <div>
-          <h2 style="font-size: 1.5rem; margin: 0;">Total Submissions: <?= count($inquiries) ?></h2>
-          <p style="color: var(--text-muted); font-size: 0.88rem; margin: 4px 0 0;">Stored in SQLite database & JSON storage (writable/inquiries.json).</p>
-        </div>
-
-        <a href="<?= base_url('contact') ?>" class="btn btn-primary btn-sm">
-          <i class="ph-bold ph-plus"></i> Submit New Test Booking
+    <!-- Top Header -->
+    <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/10">
+      <div class="flex items-center gap-3">
+        <a href="<?= base_url('/') ?>" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white text-2xl shadow-lg">
+          <i class="ph-bold ph-cpu"></i>
         </a>
+        <div>
+          <h1 class="text-2xl font-bold text-white">Nexora IT &bull; Inquiries Management</h1>
+          <p class="text-xs text-slate-400">Received project quotes & architecture consultation requests.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="<?= base_url('/') ?>" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition flex items-center gap-2">
+          <i class="ph-bold ph-arrow-left"></i> Back to Landing Page
+        </a>
+      </div>
+    </div>
+
+    <!-- Table Container -->
+    <div class="rounded-3xl bg-slate-900/80 border border-white/10 p-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <span>Active Inquiries Log</span>
+          <span class="px-2.5 py-0.5 rounded-full text-xs bg-cyan-500/20 text-cyan-400 font-mono"><?= count($inquiries) ?> total</span>
+        </h2>
       </div>
 
       <?php if (!empty($inquiries)): ?>
-        <div style="overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; font-size: 0.92rem; text-align: left;">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-300">
             <thead>
-              <tr style="background: #f8fafc; border-bottom: 2px solid var(--border-light); color: var(--text-muted);">
-                <th style="padding: 12px 14px;">Ref ID</th>
-                <th style="padding: 12px 14px;">Traveler Name</th>
-                <th style="padding: 12px 14px;">Destination & Package</th>
-                <th style="padding: 12px 14px;">Date</th>
-                <th style="padding: 12px 14px;">Guests</th>
-                <th style="padding: 12px 14px;">Contact</th>
-                <th style="padding: 12px 14px;">Submitted</th>
-                <th style="padding: 12px 14px; text-align: center;">Actions</th>
+              <tr class="border-b border-white/10 text-xs uppercase tracking-wider text-slate-400">
+                <th class="py-3 px-4">Ticket ID</th>
+                <th class="py-3 px-4">Client / Company</th>
+                <th class="py-3 px-4">Service Required</th>
+                <th class="py-3 px-4">Budget / Timeline</th>
+                <th class="py-3 px-4">Date</th>
+                <th class="py-3 px-4 text-center">Direct Action</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-white/5">
               <?php foreach ($inquiries as $inq): ?>
-                <tr style="border-bottom: 1px solid var(--border-light); transition: background 0.2s ease;">
-                  <td style="padding: 14px; font-weight: 700; font-family: monospace; color: var(--primary);">
-                    <?= esc($inq['reference_id'] ?? 'N/A') ?>
+                <tr class="hover:bg-white/[0.02] transition">
+                  <td class="py-4 px-4 font-mono font-bold text-cyan-400">
+                    <?= esc($inq['ticket_id'] ?? $inq['reference_id'] ?? 'NEX-N/A') ?>
                   </td>
-                  <td style="padding: 14px;">
-                    <strong><?= esc($inq['full_name']) ?></strong>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);"><?= esc($inq['email']) ?></div>
+                  <td class="py-4 px-4">
+                    <div class="font-bold text-white"><?= esc($inq['full_name']) ?></div>
+                    <div class="text-xs text-slate-400"><?= esc($inq['company_name'] ?? 'N/A') ?> &bull; <?= esc($inq['email']) ?></div>
                   </td>
-                  <td style="padding: 14px;">
-                    <div style="font-weight: 600;"><?= esc($inq['destination']) ?></div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);"><?= esc($inq['package_name'] ?? 'Custom') ?></div>
+                  <td class="py-4 px-4 font-medium text-slate-200">
+                    <?= esc($inq['service_needed'] ?? $inq['destination'] ?? 'General Consultation') ?>
                   </td>
-                  <td style="padding: 14px; font-size: 0.88rem;">
-                    <?= esc($inq['travel_date']) ?>
+                  <td class="py-4 px-4 text-xs">
+                    <div class="text-emerald-400 font-semibold"><?= esc($inq['budget_range'] ?? 'Standard') ?></div>
+                    <div class="text-slate-400"><?= esc($inq['timeline'] ?? '1-3 Mos') ?></div>
                   </td>
-                  <td style="padding: 14px; font-weight: 700;">
-                    <?= esc($inq['guests']) ?>
+                  <td class="py-4 px-4 text-xs text-slate-500">
+                    <?= esc(date('M d, H:i', strtotime($inq['created_at'] ?? 'now'))) ?>
                   </td>
-                  <td style="padding: 14px; font-size: 0.85rem;">
-                    <div><a href="tel:<?= esc($inq['phone']) ?>"><?= esc($inq['phone']) ?></a></div>
-                  </td>
-                  <td style="padding: 14px; font-size: 0.82rem; color: var(--text-muted);">
-                    <?= esc(date('M d, Y H:i', strtotime($inq['created_at'] ?? 'now'))) ?>
-                  </td>
-                  <td style="padding: 14px; text-align: center;">
+                  <td class="py-4 px-4 text-center">
                     <?php
                       $cleanPhone = preg_replace('/[^0-9]/', '', $inq['phone'] ?? '');
-                      $clientWaMsg = "Hello " . $inq['full_name'] . "! This is the WanderLuxe Concierge team regarding your booking inquiry (" . ($inq['reference_id'] ?? '') . ") for " . $inq['destination'] . ".";
+                      $leadWaMsg = "Hello " . $inq['full_name'] . "! This is Nexora IT Solutions regarding your project consultation (" . ($inq['ticket_id'] ?? $inq['reference_id'] ?? '') . "). Are you available for a brief technical call?";
                     ?>
-                    <a href="https://wa.me/<?= $cleanPhone ?: '15553828687' ?>?text=<?= urlencode($clientWaMsg) ?>" target="_blank" class="btn btn-whatsapp btn-sm" style="padding: 6px 12px; font-size: 0.8rem;" title="Chat directly with traveler">
-                      <i class="ph-bold ph-whatsapp-logo"></i> Reply on WhatsApp
+                    <a href="https://wa.me/<?= $cleanPhone ?: '15553828687' ?>?text=<?= urlencode($leadWaMsg) ?>" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#25D366] hover:bg-[#1ebe57] text-white text-xs font-bold transition">
+                      <i class="ph-bold ph-whatsapp-logo text-base"></i> Reply on WhatsApp
                     </a>
                   </td>
                 </tr>
@@ -84,19 +94,15 @@
           </table>
         </div>
       <?php else: ?>
-        <div style="text-align: center; padding: 60px 20px;">
-          <div style="font-size: 3rem; color: var(--text-muted); margin-bottom: 12px;">
-            <i class="ph-bold ph-tray"></i>
-          </div>
-          <h3>No inquiries recorded yet</h3>
-          <p style="color: var(--text-muted); margin: 8px 0 20px;">Be the first to submit a travel booking request!</p>
-          <a href="<?= base_url('contact') ?>" class="btn btn-primary">Go to Contact & Booking Form</a>
+        <div class="py-16 text-center text-slate-500">
+          <i class="ph-bold ph-tray text-5xl mb-3 block text-slate-600"></i>
+          <p class="text-base font-medium">No inquiries received yet.</p>
+          <a href="<?= base_url('/#contact-form') ?>" class="text-cyan-400 hover:underline text-xs mt-2 inline-block">Test submitting a consultation request &rarr;</a>
         </div>
       <?php endif; ?>
-
     </div>
 
   </div>
-</section>
 
-<?= $this->endSection() ?>
+</body>
+</html>

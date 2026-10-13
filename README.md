@@ -1,36 +1,32 @@
 # bookfunnel
 
-## WanderLuxe - Luxury Tourism Website (CodeIgniter 4)
+## Nexora IT - Enterprise IT Services Landing Page (CodeIgniter 4)
 
-A complete 5-page responsive luxury tourism web application with dynamic search, filterable destination guides, handcrafted tour packages, full form submission handling, data persistence, and deep WhatsApp integration.
+A professional, high-performance IT Services single landing page designed in **Tailwind CSS** featuring glossy gradient blending, interactive form submission, direct call actions, and instant WhatsApp integration.
+
+### Core Capabilities & Sections
+- **Hero Section:** Glossy gradient mesh blending, real-time cloud terminal diagnostics, SLA indicators, and primary Call & WhatsApp buttons.
+- **Enterprise IT Offerings:**
+  - Custom Software & Web Engineering
+  - Cloud Migration & DevOps Automation (AWS, Azure, GCP)
+  - Cybersecurity, Pen-Testing & SOC Compliance
+  - Enterprise AI & Data Pipelines
+  - 24/7 Managed IT Infrastructure & Helpdesk
+  - Virtual CTO & Architecture Advisory
+- **Direct Calling & WhatsApp Hub:**
+  - One-tap telephone hotline (`tel:+15553828687`)
+  - Instant WhatsApp chat (`https://wa.me/15553828687`) with pre-filled technical inquiry messages
+  - Persistent floating WhatsApp and Call action buttons
+- **Interactive Form Submission (`#contact-form`):**
+  - Project assessment form with server-side CodeIgniter 4 validation and CSRF protection.
+  - Automatic ticket generation (e.g. `NEX-2610-XXXXX`).
+  - Dual SQLite (`writable/it_services.db`) & JSON persistence (`writable/inquiries.json`).
+  - 1-Click WhatsApp sync to send ticket details to a solutions architect immediately.
+- **Inquiries Dashboard (`/inquiries`):** Review leads and chat with clients directly via WhatsApp.
 
 ### Tech Stack
 - **Framework:** CodeIgniter 4 (PHP 8.2+)
-- **Styling:** Custom Vanilla CSS Design System with CSS variables, Glassmorphism, and responsive grid layouts
-- **Icons:** Phosphor Icons & FontAwesome SVG
-- **Database / Persistence:** Dual SQLite (`writable/tourism.db`) & JSON repository (`writable/inquiries.json`)
-- **Web Server:** Apache (XAMPP `htdocs/gitags`) / Built-in CLI Spark
-
-### Key Features
-1. **5 Main Pages:**
-   - **Home (`/`)**: Hero section, animated traveler statistics, trip finder search bar, featured destinations, tour package previews, why choose us, testimonials.
-   - **Destinations (`/destinations`)**: Comprehensive catalog with client/server category filtering (*Tropical*, *Alpine*, *Cultural*, *Safari*, *Coastal*) and individual destination detail guides.
-   - **Tour Packages (`/packages`)**: Curated itineraries with day-by-day breakdowns, inclusions, discount pricing, and direct booking actions.
-   - **About Us (`/about`)**: Company heritage, expedition curators, and international safety & sustainability certifications.
-   - **Contact & Booking (`/contact`)**: Global desk info, office locations, interactive form with server-side validation, CSRF protection, and confirmation receipt.
-2. **Form Submission & Booking Lifecycle:**
-   - Client and server-side validation (required fields, sanitization, guest count limits).
-   - Generates unique human-readable Reference ID (e.g. `WLX-2610-XXXXX`).
-   - Confirmation page (`/contact/confirmation`) with summary and 1-click WhatsApp sync.
-   - Submissions Management Dashboard (`/inquiries`) to review leads and click-to-reply via WhatsApp.
-3. **WhatsApp Integration:**
-   - Persistent floating WhatsApp quick-contact widget on all pages with pre-filled prompt modal.
-   - Header & Footer 24/7 direct chat links.
-   - Direct package and destination cards with pre-filled WhatsApp inquiry triggers.
-   - Priority booking synchronization from confirmation page.
-
-### Running Locally
-1. Place project in `c:\xampp8.2\htdocs\gitags`
-2. Start Apache in XAMPP
-3. Access at: `http://localhost/gitags/` or `http://localhost/gitags/public/`
-4. Or run via Spark: `php spark serve` -> `http://localhost:8080/`
+- **Styling:** Tailwind CSS (Modern dark mode, glassmorphism, glossy gradient blending)
+- **Icons:** Phosphor Icons SVG
+- **Database:** Dual SQLite & JSON Storage
+- **Server:** Apache (XAMPP `htdocs/gitags`) with clean URLs (`.htaccess`)

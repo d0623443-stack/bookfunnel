@@ -12,9 +12,7 @@ class Inquiries extends BaseController
         $inquiries = $inquiryModel->getAllInquiries();
 
         $data = [
-            'title' => 'Inquiries & Booking Submissions - WanderLuxe Concierge',
-            'meta_description' => 'Review recent travel inquiries and bookings submitted through the WanderLuxe website.',
-            'active_nav' => 'inquiries',
+            'title' => 'Client IT Consultations & Project Quotes - Nexora Admin',
             'inquiries' => $inquiries,
         ];
 

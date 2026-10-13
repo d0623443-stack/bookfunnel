@@ -14,7 +14,7 @@ class InquiryModel extends Model
     {
         parent::__construct();
         $this->storageFile = WRITEPATH . 'inquiries.json';
-        $this->sqliteDbFile = WRITEPATH . 'tourism.db';
+        $this->sqliteDbFile = WRITEPATH . 'it_services.db';
         $this->initSqlite();
     }
 
@@ -27,20 +27,19 @@ class InquiryModel extends Model
             if (extension_loaded('pdo_sqlite')) {
                 $pdo = new PDO('sqlite:' . $this->sqliteDbFile);
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $pdo->exec("CREATE TABLE IF NOT EXISTS inquiries (
+                $pdo->exec("CREATE TABLE IF NOT EXISTS it_inquiries (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    reference_id TEXT UNIQUE,
+                    ticket_id TEXT UNIQUE,
                     full_name TEXT NOT NULL,
+                    company_name TEXT,
                     email TEXT NOT NULL,
                     phone TEXT NOT NULL,
-                    destination TEXT NOT NULL,
-                    package_name TEXT,
-                    travel_date TEXT NOT NULL,
-                    guests INTEGER DEFAULT 1,
-                    travel_style TEXT,
-                    message TEXT,
-                    whatsapp_contact TEXT,
-                    status TEXT DEFAULT 'pending',
+                    service_needed TEXT NOT NULL,
+                    budget_range TEXT,
+                    timeline TEXT,
+                    project_details TEXT,
+                    whatsapp_contact TEXT DEFAULT 'Yes',
+                    status TEXT DEFAULT 'New',
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )");
             }
@@ -50,7 +49,7 @@ class InquiryModel extends Model
     }
 
     /**
-     * Validation rules for the tourism inquiry / booking form
+     * Validation rules for the IT consultation / quote form
      */
     public function getValidationRules(array $options = []): array
     {
@@ -58,46 +57,32 @@ class InquiryModel extends Model
             'full_name' => [
                 'rules'  => 'required|min_length[2]|max_length[100]',
                 'errors' => [
-                    'required'   => 'Please enter your full name.',
-                    'min_length' => 'Your full name must have at least 2 characters.'
+                    'required'   => 'Please provide your full name or primary contact name.',
+                    'min_length' => 'Name must have at least 2 characters.'
                 ]
             ],
             'email' => [
                 'rules'  => 'required|valid_email|max_length[120]',
                 'errors' => [
-                    'required'    => 'Please enter your contact email address.',
-                    'valid_email' => 'Please provide a valid email address.'
+                    'required'    => 'Please provide a valid business email address.',
+                    'valid_email' => 'Please enter a valid email format.'
                 ]
             ],
             'phone' => [
-                'rules'  => 'required|min_length[6]|max_length[25]',
+                'rules'  => 'required|min_length[7]|max_length[25]',
                 'errors' => [
-                    'required'   => 'Please enter your phone or WhatsApp number.',
-                    'min_length' => 'Please enter a valid phone number.'
+                    'required'   => 'Please provide a phone or WhatsApp number for project consultation.',
+                    'min_length' => 'Please provide a valid phone number.'
                 ]
             ],
-            'destination' => [
-                'rules'  => 'required|max_length[150]',
-                'errors' => [
-                    'required' => 'Please select or specify your intended destination.'
-                ]
-            ],
-            'travel_date' => [
+            'service_needed' => [
                 'rules'  => 'required',
                 'errors' => [
-                    'required' => 'Please select your desired travel date.'
+                    'required' => 'Please select the primary IT service required.'
                 ]
             ],
-            'guests' => [
-                'rules'  => 'required|integer|greater_than_equal_to[1]|less_than_equal_to[50]',
-                'errors' => [
-                    'required'              => 'Please indicate the number of guests.',
-                    'greater_than_equal_to' => 'There must be at least 1 guest.',
-                    'less_than_equal_to'    => 'For groups larger than 50, please contact our VIP group concierge.'
-                ]
-            ],
-            'message' => [
-                'rules'  => 'permit_empty|max_length[2000]',
+            'project_details' => [
+                'rules'  => 'permit_empty|max_length[3000]',
             ]
         ];
     }
@@ -107,51 +92,49 @@ class InquiryModel extends Model
      */
     public function saveInquiry(array $data): array
     {
-        $referenceId = 'WLX-' . date('ym') . '-' . strtoupper(substr(bin2hex(random_bytes(3)), 0, 5));
+        $ticketId = 'NEX-' . date('ym') . '-' . strtoupper(substr(bin2hex(random_bytes(3)), 0, 5));
 
         $record = [
             'id'               => time() . rand(100, 999),
-            'reference_id'     => $referenceId,
+            'ticket_id'        => $ticketId,
             'full_name'        => trim($data['full_name'] ?? ''),
+            'company_name'     => trim($data['company_name'] ?? 'Not specified'),
             'email'            => strtolower(trim($data['email'] ?? '')),
             'phone'            => trim($data['phone'] ?? ''),
-            'destination'      => trim($data['destination'] ?? 'Custom Expedition'),
-            'package_name'     => trim($data['package_name'] ?? 'Custom Package'),
-            'travel_date'      => trim($data['travel_date'] ?? date('Y-m-d', strtotime('+30 days'))),
-            'guests'           => (int) ($data['guests'] ?? 1),
-            'travel_style'     => trim($data['travel_style'] ?? 'Luxury'),
-            'message'          => trim($data['message'] ?? ''),
+            'service_needed'   => trim($data['service_needed'] ?? 'General IT Consultation'),
+            'budget_range'     => trim($data['budget_range'] ?? '$5,000 - $15,000'),
+            'timeline'         => trim($data['timeline'] ?? '1 - 3 Months'),
+            'project_details'  => trim($data['project_details'] ?? ''),
             'whatsapp_contact' => !empty($data['whatsapp_opt_in']) ? 'Yes' : 'No',
-            'status'           => 'New',
+            'status'           => 'New Lead',
             'created_at'       => date('Y-m-d H:i:s'),
         ];
 
-        // 1. Save to JSON File Storage
+        // 1. JSON Persistence
         $all = $this->getAllInquiries();
         array_unshift($all, $record);
         @file_put_contents($this->storageFile, json_encode($all, JSON_PRETTY_PRINT));
 
-        // 2. Save to SQLite if PDO is available
+        // 2. SQLite Persistence
         try {
             if (extension_loaded('pdo_sqlite')) {
                 $pdo = new PDO('sqlite:' . $this->sqliteDbFile);
-                $stmt = $pdo->prepare("INSERT INTO inquiries 
-                    (reference_id, full_name, email, phone, destination, package_name, travel_date, guests, travel_style, message, whatsapp_contact, status, created_at)
-                    VALUES (:ref, :name, :email, :phone, :dest, :pkg, :tdate, :guests, :style, :msg, :wa, :status, :created)");
+                $stmt = $pdo->prepare("INSERT INTO it_inquiries 
+                    (ticket_id, full_name, company_name, email, phone, service_needed, budget_range, timeline, project_details, whatsapp_contact, status, created_at)
+                    VALUES (:tid, :name, :company, :email, :phone, :service, :budget, :timeline, :details, :wa, :status, :created)");
                 $stmt->execute([
-                    ':ref'     => $record['reference_id'],
-                    ':name'    => $record['full_name'],
-                    ':email'   => $record['email'],
-                    ':phone'   => $record['phone'],
-                    ':dest'    => $record['destination'],
-                    ':pkg'     => $record['package_name'],
-                    ':tdate'   => $record['travel_date'],
-                    ':guests'  => $record['guests'],
-                    ':style'   => $record['travel_style'],
-                    ':msg'     => $record['message'],
-                    ':wa'      => $record['whatsapp_contact'],
-                    ':status'  => $record['status'],
-                    ':created' => $record['created_at'],
+                    ':tid'      => $record['ticket_id'],
+                    ':name'     => $record['full_name'],
+                    ':company'  => $record['company_name'],
+                    ':email'    => $record['email'],
+                    ':phone'    => $record['phone'],
+                    ':service'  => $record['service_needed'],
+                    ':budget'   => $record['budget_range'],
+                    ':timeline' => $record['timeline'],
+                    ':details'  => $record['project_details'],
+                    ':wa'       => $record['whatsapp_contact'],
+                    ':status'   => $record['status'],
+                    ':created'  => $record['created_at'],
                 ]);
             }
         } catch (\Throwable $e) {
@@ -174,19 +157,5 @@ class InquiryModel extends Model
             }
         }
         return [];
-    }
-
-    /**
-     * Find inquiry by Reference ID
-     */
-    public function findByReference(string $referenceId): ?array
-    {
-        $inquiries = $this->getAllInquiries();
-        foreach ($inquiries as $inq) {
-            if (strcasecmp($inq['reference_id'] ?? '', $referenceId) === 0) {
-                return $inq;
-            }
-        }
-        return null;
     }
 }
