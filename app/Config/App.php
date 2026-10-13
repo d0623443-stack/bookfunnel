@@ -22,14 +22,9 @@ class App extends BaseConfig
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
      * If you want to accept multiple Hostnames, set this.
      *
-     * E.g.,
-     * When your site URL ($baseURL) is 'http://example.com/', and your site
-     * also accepts 'http://media.example.com/' and 'http://accounts.example.com/':
-     *     ['media.example.com', 'accounts.example.com']
-     *
      * @var list<string>
      */
-    public array $allowedHostnames = [];
+    public array $allowedHostnames = ['localhost', '127.0.0.1'];
 
     /**
      * --------------------------------------------------------------------------
@@ -41,6 +36,22 @@ class App extends BaseConfig
      * from your site URIs, set this variable to an empty string.
      */
     public string $indexPage = '';
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        // Auto-detect baseURL dynamically based on current incoming HTTP request
+        if (!empty($_SERVER['HTTP_HOST'])) {
+            $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+            $scriptDir = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '')), '/');
+            // Remove /public if accessed through root or rewrite
+            if (str_ends_with($scriptDir, '/public')) {
+                $scriptDir = substr($scriptDir, 0, -7);
+            }
+            $this->baseURL = $scheme . $_SERVER['HTTP_HOST'] . $scriptDir . '/';
+        }
+    }
 
     /**
      * --------------------------------------------------------------------------
