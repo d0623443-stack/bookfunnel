@@ -1,0 +1,15 @@
+# Disable directory browsing
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Prevent infinite loop if request already points to public/
+    RewriteRule ^public/ - [L]
+
+    # Rewrite root request to public/
+    RewriteRule ^$ public/ [L]
+
+    # Rewrite all other requests to public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
